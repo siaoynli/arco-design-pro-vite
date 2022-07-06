@@ -1,7 +1,7 @@
 <template>
   <div class="login-form-wrapper">
     <div class="login-form-title">{{ $t('login.form.title') }}</div>
-    <div class="login-form-sub-title">{{ $t('login.form.title') }}</div>
+    <div class="login-form-sub-title">{{ $t('login.form.subtitle') }}</div>
     <div class="login-form-error-msg">{{ errorMessage }}</div>
     <a-form
       ref="loginForm"
@@ -41,12 +41,13 @@
           </template>
         </a-input-password>
       </a-form-item>
+
       <a-space :size="16" direction="vertical">
         <div class="login-form-password-actions">
           <a-checkbox
             checked="rememberPassword"
             :model-value="loginConfig.rememberPassword"
-            @change="(setRememberPassword as any)"
+            @change="setRememberPassword"
           >
             {{ $t('login.form.rememberPassword') }}
           </a-checkbox>
@@ -55,10 +56,28 @@
         <a-button type="primary" html-type="submit" long :loading="loading">
           {{ $t('login.form.login') }}
         </a-button>
-        <a-button type="text" long class="login-form-register-btn">
-          {{ $t('login.form.register') }}
-        </a-button>
       </a-space>
+
+      <div class="mt-4 view-account-other">
+        <div class="flex">
+          <div class="flex-initial"><span>其它登录方式</span></div>
+          <div class="flex-initial mx-2"
+            ><a href="javascript:">
+              <icon-github size="24" class="icon-color" />
+            </a>
+          </div>
+          <div class="flex-initial mx-2">
+            <a href="javascript:">
+              <icon-alipay-circle size="24" class="icon-color" />
+            </a>
+          </div>
+          <div class="flex-initial" style="margin-left: auto">
+            <a-tooltip content="创建账号，请联系管理员">
+              <a-link>{{ $t('login.form.register') }}</a-link>
+            </a-tooltip>
+          </div>
+        </div>
+      </div>
     </a-form>
   </div>
 </template>
@@ -81,7 +100,7 @@
   const userStore = useUserStore();
 
   const loginConfig = useStorage('login-config', {
-    rememberPassword: true,
+    rememberPassword: false,
     username: 'admin', // 演示默认值
     password: 'admin', // demo default value
   });
@@ -102,7 +121,7 @@
       try {
         await userStore.login(values as LoginData);
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
-        router.push({
+        await router.push({
           name: (redirect as string) || 'Workplace',
           query: {
             ...othersQuery,
@@ -159,6 +178,18 @@
 
     &-register-btn {
       color: var(--color-text-3) !important;
+    }
+  }
+
+  .view-account-other {
+    color: var(--font-color-1);
+
+    span {
+      line-height: 2em;
+    }
+
+    .icon-color {
+      color: var(--icon-color-1);
     }
   }
 </style>

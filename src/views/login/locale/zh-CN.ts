@@ -1,5 +1,7 @@
 export default {
-  'login.form.title': '登录 Arco Design Pro',
+  'login.form.welcome': '杭州网通用后台管理系统2022',
+  'login.form.title': '杭州网通用后台管理系统',
+  'login.form.subtitle': '登录后台管理系统',
   'login.form.userName.errMsg': '用户名不能为空',
   'login.form.password.errMsg': '密码不能为空',
   'login.form.login.errMsg': '登录出错，轻刷新重试',
