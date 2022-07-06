@@ -11,7 +11,7 @@
             <icon-reply size="32" />
           </a-tooltip>
           <a-tooltip v-else content="微信扫码登陆">
-            <icon-scan size="32" />
+            <icon-qrcode size="32" />
           </a-tooltip>
         </div>
         <div class="account-form">
