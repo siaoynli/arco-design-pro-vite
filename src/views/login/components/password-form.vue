@@ -7,56 +7,47 @@
     :model="userInfo"
     class="login-form"
     layout="vertical"
-    size="large"
     @submit="handleSubmit"
   >
     <a-form-item
-      field="phoneNumber"
-      :rules="[
-        {
-          required: true,
-          message: '请输入手机号码',
-        },
-        {
-          match: /^1[345789]\d{9}$/,
-          message: '手机号码格式不正确',
-        },
-      ]"
+      field="email"
+      :rules="[{ type: 'email', required: true, message: '请输入邮箱地址' }]"
       :validate-trigger="['change', 'blur']"
       hide-label
     >
-      <a-input v-model="userInfo.phoneNumber" placeholder="手机号码">
+      <a-input v-model="userInfo.email" placeholder="请输入邮箱地址">
         <template #prefix>
-          <icon-phone />
+          <icon-email />
         </template>
       </a-input>
     </a-form-item>
-
     <a-form-item
-      field="code"
-      :rules="[{ required: true, message: '请输入验证码' }]"
+      field="password"
+      :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
       :validate-trigger="['change', 'blur']"
       hide-label
     >
-      <a-space>
-        <a-input v-model="userInfo.code" placeholder="验证码" :max-length="6">
-          <template #prefix>
-            <icon-code />
-          </template>
-        </a-input>
-        <a-button
-          type="primary"
-          :loading="cLoading"
-          style="width: 130px"
-          :disabled="disabled"
-          @click="sendCode"
-        >
-          发送验证码
-        </a-button>
-      </a-space>
+      <a-input-password
+        v-model="userInfo.password"
+        :placeholder="$t('login.form.password.placeholder')"
+        allow-clear
+      >
+        <template #prefix>
+          <icon-lock />
+        </template>
+      </a-input-password>
     </a-form-item>
-
     <a-space :size="16" direction="vertical">
+      <div class="login-form-password-actions">
+        <a-checkbox
+          checked="rememberPassword"
+          :model-value="loginConfig.rememberPassword"
+          @change="setRememberPassword"
+        >
+          {{ $t('login.form.rememberPassword') }}
+        </a-checkbox>
+        <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
+      </div>
       <a-button type="primary" html-type="submit" long :loading="loading">
         {{ $t('login.form.login') }}
       </a-button>
@@ -65,7 +56,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, watch } from 'vue';
+  import { ref, reactive } from 'vue';
   import { useRouter } from 'vue-router';
   import { Message } from '@arco-design/web-vue';
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
@@ -81,28 +72,15 @@
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
 
-  const cLoading = ref<boolean>(false);
-
-  // 存储到storage里
-  const loginConfig = useStorage('login-code-config', {
-    phoneNumber: '18906715574',
+  const loginConfig = useStorage('login-password-config', {
+    rememberPassword: false,
+    email: 'admin@admin.cn',
+    password: 'admin',
   });
-
-  const reg = /^1[345789]\d{9}$/;
 
   const userInfo = reactive({
-    phoneNumber: loginConfig.value.phoneNumber,
-    code: '',
-  });
-
-  const disabled = ref<boolean>(!reg.test(userInfo.phoneNumber));
-
-  watch(userInfo, (newValue, oldValue) => {
-    if (newValue.phoneNumber && reg.test(newValue.phoneNumber)) {
-      disabled.value = false;
-    } else {
-      disabled.value = true;
-    }
+    email: loginConfig.value.email,
+    password: loginConfig.value.password,
   });
 
   const handleSubmit = async ({
@@ -124,6 +102,12 @@
           },
         });
         Message.success(t('login.form.login.success'));
+        const { rememberPassword } = loginConfig.value;
+        const { email, password } = values;
+        // 实际生产环境需要进行加密存储。
+        // The actual production environment requires encrypted storage.
+        loginConfig.value.email = rememberPassword ? email : '';
+        loginConfig.value.password = rememberPassword ? password : '';
       } catch (err) {
         errorMessage.value = (err as Error).message;
       } finally {
@@ -131,16 +115,8 @@
       }
     }
   };
-
-  const sendCode = async ({
-    errors,
-    values,
-  }: {
-    errors: Record<string, ValidatedError> | undefined;
-    values: Record<string, any>;
-  }) => {
-    cLoading.value = true;
-    // 验证码登陆
+  const setRememberPassword = (value: boolean) => {
+    loginConfig.value.rememberPassword = value;
   };
 </script>
 

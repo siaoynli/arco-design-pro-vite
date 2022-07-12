@@ -7,16 +7,43 @@
       </div>
       <div class="root-right-item">
         <div class="cursor-pointer corner" @click="switchLogin">
-          <a-tooltip v-if="isPasswordLogin" content="密码登陆">
-            <icon-reply size="32" />
-          </a-tooltip>
-          <a-tooltip v-else content="微信扫码登陆">
-            <icon-qrcode size="32" />
+          <a-tooltip :content="tooltipsTitle">
+            <icon-reply v-if="loginStatus" size="32" />
+            <icon-qrcode v-else size="32" />
           </a-tooltip>
         </div>
         <div class="account-form">
-          <QRcode v-show="isPasswordLogin" />
-          <LoginForm v-show="!isPasswordLogin" />
+          <div class="login-form-wrapper">
+            <QRCode v-if="loginStatus === 1" />
+            <PasswordForm v-else-if="loginStatus === 2" />
+            <LoginForm v-else />
+            <div v-show="!loginStatus" class="mt-4 view-account-other">
+              <div class="flex">
+                <div class="flex-initial"><span>其它登录方式</span></div>
+                <div class="flex-initial mx-2">
+                  <a href="javascript:" @click="switchPassword">
+                    <a-tooltip content="密码登陆">
+                      <icon-lock size="24" class="icon-color" />
+                    </a-tooltip>
+                  </a>
+                </div>
+
+                <div class="flex-initial mx-2">
+                  <a href="javascript:">
+                    <a-tooltip content="支付宝授权">
+                      <icon-alipay-circle size="24" class="icon-color" />
+                    </a-tooltip>
+                  </a>
+                </div>
+
+                <div class="flex-initial" style="margin-left: auto">
+                  <a-tooltip content="创建账号，请联系管理员">
+                    <a-link>{{ $t('login.form.register') }}</a-link>
+                  </a-tooltip>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -26,12 +53,20 @@
 <script lang="ts" setup>
   import { ref } from 'vue';
   import LoginForm from './components/login-form.vue';
-  import QRcode from './components/qr-code.vue';
+  import PasswordForm from './components/password-form.vue';
+  import QRCode from './components/qr-code.vue';
 
-  const isPasswordLogin = ref<boolean>(false);
+  const loginStatus = ref<number>(0);
+  const tooltipsTitle = ref<string>('微信扫码登陆');
 
   const switchLogin = () => {
-    isPasswordLogin.value = !isPasswordLogin.value;
+    loginStatus.value = loginStatus.value ? 0 : 1;
+    tooltipsTitle.value = loginStatus.value ? '验证码登陆' : '微信扫码登陆';
+  };
+
+  const switchPassword = () => {
+    loginStatus.value = 2;
+    tooltipsTitle.value = '验证码登陆';
   };
 </script>
 
@@ -97,11 +132,22 @@
         }
       }
     }
+
+    .view-account-other {
+      color: var(--font-color-1);
+
+      span {
+        line-height: 2em;
+      }
+
+      .icon-color {
+        color: var(--icon-color-1);
+      }
+    }
   }
 </style>
 
 <style lang="less" scoped>
-  // responsive
   @media (max-width: @screen-lg) {
     .account-root {
       .account-root-item {

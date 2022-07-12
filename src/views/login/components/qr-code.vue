@@ -24,7 +24,7 @@
 <style lang="less" scoped>
   .qrcode {
     width: 265px;
-    margin: 100px auto;
+    margin: 60px auto 0 auto;
     color: var(--color-text-3);
     text-align: center;
     background: none;
