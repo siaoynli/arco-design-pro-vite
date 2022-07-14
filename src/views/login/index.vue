@@ -51,7 +51,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import LoginForm from './components/login-form.vue';
   import PasswordForm from './components/password-form.vue';
   import QRCode from './components/qr-code.vue';
@@ -68,6 +68,17 @@
     loginStatus.value = 2;
     tooltipsTitle.value = '验证码登陆';
   };
+
+  onMounted(() => {
+    if (window.Notification) {
+      Notification.requestPermission();
+    }
+    console.log(
+      '\n%c 2022 版权所有 %c  © 西瓜哥 QQ:120235331  Github: https://github.com/siaoynli  \n',
+      'color:#FFFFFB;background:#1890ff;padding:5px 0;border-radius:.5rem 0 0 .5rem;',
+      'color:#FFFFFB;background:#080808;padding:5px 0;border-radius:0 .5rem .5rem 0;'
+    );
+  });
 </script>
 
 <style lang="less" scoped>

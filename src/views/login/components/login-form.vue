@@ -1,7 +1,6 @@
 <template>
   <div class="login-form-title">{{ $t('login.form.title') }}</div>
   <div class="login-form-sub-title">{{ $t('login.form.subtitle') }}</div>
-  <div class="login-form-error-msg">{{ errorMessage }}</div>
   <a-form
     ref="loginForm"
     :model="userInfo"
@@ -11,9 +10,10 @@
     @submit="handleSubmit"
   >
     <a-form-item
-      field="phoneNumber"
+      field="phone"
       :rules="[
         {
+          type: 'number',
           required: true,
           message: '请输入手机号码',
         },
@@ -25,7 +25,7 @@
       :validate-trigger="['change', 'blur']"
       hide-label
     >
-      <a-input v-model="userInfo.phoneNumber" placeholder="手机号码">
+      <a-input v-model="userInfo.phone" placeholder="手机号码">
         <template #prefix>
           <icon-phone />
         </template>
@@ -34,7 +34,13 @@
 
     <a-form-item
       field="code"
-      :rules="[{ required: true, message: '请输入验证码' }]"
+      :rules="[
+        { required: true, message: '请输入验证码' },
+        {
+          match: /\d{6}$/,
+          message: '验证码格式不正确',
+        },
+      ]"
       :validate-trigger="['change', 'blur']"
       hide-label
     >
@@ -49,9 +55,11 @@
           :loading="cLoading"
           style="width: 130px"
           :disabled="disabled"
-          @click="sendCode"
+          @click="handleSendCode"
         >
-          发送验证码
+          <template v-if="refTime"> {{ refTime }} 秒</template>
+
+          <template v-else> 发送验证码</template>
         </a-button>
       </a-space>
     </a-form-item>
@@ -71,39 +79,76 @@
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
   import { useI18n } from 'vue-i18n';
   import { useStorage } from '@vueuse/core';
-  import { useUserStore } from '@/store';
+  import { useUserStore, useCodeStore } from '@/store';
   import useLoading from '@/hooks/loading';
   import type { LoginData } from '@/api/user';
 
   const router = useRouter();
   const { t } = useI18n();
-  const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
+  const codeStore = useCodeStore();
 
   const cLoading = ref<boolean>(false);
 
+  const refTime = ref<number>(0);
+
   // 存储到storage里
   const loginConfig = useStorage('login-code-config', {
-    phoneNumber: '18906715574',
+    phone: '18906715574',
   });
 
-  const reg = /^1[345789]\d{9}$/;
+  const regExp = /^1[345789]\d{9}$/;
 
   const userInfo = reactive({
-    phoneNumber: loginConfig.value.phoneNumber,
+    phone: loginConfig.value.phone,
     code: '',
+    key: '',
+    loginType: 'code',
   });
 
-  const disabled = ref<boolean>(!reg.test(userInfo.phoneNumber));
-
-  watch(userInfo, (newValue, oldValue) => {
-    if (newValue.phoneNumber && reg.test(newValue.phoneNumber)) {
-      disabled.value = false;
-    } else {
-      disabled.value = true;
+  const disabled = ref<boolean>(!regExp.test(userInfo.phone));
+  // 监听用户手机号码
+  watch(
+    () => userInfo.phone,
+    (newValue) => {
+      if (newValue && regExp.test(newValue)) {
+        disabled.value = false;
+      } else {
+        disabled.value = true;
+      }
     }
-  });
+  );
+
+  // 监听秒数
+  watch(
+    () => refTime.value,
+    (newValue) => {
+      disabled.value = !!newValue;
+    }
+  );
+
+  const handleSendCode = async () => {
+    cLoading.value = true;
+    refTime.value = 60;
+    // 倒计时秒数
+    const timer = setInterval(() => {
+      if (refTime.value <= 0) {
+        clearInterval(timer);
+      } else {
+        refTime.value -= 1;
+      }
+    }, 1000);
+
+    try {
+      // 验证码登陆
+      await codeStore.sendCode(userInfo.phone);
+      userInfo.key = codeStore.$state.key || '';
+      Message.success('发送成功,验证码有效时间10分钟');
+    } finally {
+      cLoading.value = false;
+    }
+  };
 
   const handleSubmit = async ({
     errors,
@@ -124,28 +169,17 @@
           },
         });
         Message.success(t('login.form.login.success'));
-      } catch (err) {
-        errorMessage.value = (err as Error).message;
       } finally {
         setLoading(false);
       }
     }
   };
-
-  const sendCode = async ({
-    errors,
-    values,
-  }: {
-    errors: Record<string, ValidatedError> | undefined;
-    values: Record<string, any>;
-  }) => {
-    cLoading.value = true;
-    // 验证码登陆
-  };
 </script>
 
 <style lang="less" scoped>
   .login-form {
+    margin-top: 32px;
+
     &-wrapper {
       width: 320px;
     }

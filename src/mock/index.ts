@@ -22,5 +22,5 @@ import '@/views/user/setting/mock';
 /** simple end */
 
 Mock.setup({
-  timeout: '600-1000',
+  timeout: '100-600',
 });
