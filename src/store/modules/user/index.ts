@@ -7,27 +7,43 @@ import {
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
-import { UserState } from './types';
+import { RoleType, UserState } from './types';
 import useAppStore from '../app';
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
+    id: undefined,
     name: undefined,
-    avatar: undefined,
-    job: undefined,
-    organization: undefined,
-    location: undefined,
     email: undefined,
-    introduction: undefined,
-    personalWebsite: undefined,
-    jobName: undefined,
-    organizationName: undefined,
-    locationName: undefined,
+    email_verified_at: undefined,
+    created_at: undefined,
+    updated_at: undefined,
     phone: undefined,
-    registrationDate: undefined,
-    accountId: undefined,
-    certification: undefined,
-    role: '',
+    avatar: undefined,
+    nick_name: undefined,
+    cn_name: undefined,
+    gender: undefined,
+    qq: undefined,
+    address: undefined,
+    login_count: undefined,
+    login_error_count: undefined,
+    login_time: undefined,
+    login_ip: undefined,
+    status: undefined,
+    remarks: undefined,
+    role_id: undefined,
+    department_id: undefined,
+    is_admin: undefined,
+    login_notification: undefined,
+    phone_verified_at: undefined,
+    wx_openid: undefined,
+    qq_openid: undefined,
+    ios_openid: undefined,
+    device_hash: undefined,
+    open_comment: undefined,
+    invite_code: undefined,
+    deleted_at: undefined,
+    role: 'admin',
   }),
 
   getters: {
