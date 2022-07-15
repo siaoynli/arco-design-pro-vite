@@ -161,6 +161,7 @@
       setLoading(true);
       try {
         await userStore.login(values as LoginData);
+        Message.success('登陆成功，欢迎使用!');
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
         await router.push({
           name: (redirect as string) || 'Workplace',
@@ -168,7 +169,6 @@
             ...othersQuery,
           },
         });
-        Message.success(t('login.form.login.success'));
       } finally {
         setLoading(false);
       }

@@ -42,7 +42,7 @@
             </template>
           </a-button>
         </a-tooltip>
-        <a-dropdown trigger="click" @select="changeLocale as any">
+        <a-dropdown trigger="click" @select="changeLocale">
           <div ref="triggerBtn" class="trigger-btn"></div>
           <template #content>
             <a-doption
@@ -166,17 +166,19 @@
             <a-doption>
               <a-space @click="$router.push({ name: 'Setting' })">
                 <icon-settings />
-                <span>
-                  {{ $t('messageBox.userSettings') }}
-                </span>
+                <span> 用户设置 </span>
+              </a-space>
+            </a-doption>
+            <a-doption>
+              <a-space @click="handleClearCache">
+                <icon-experiment />
+                <span> 清除缓存 </span>
               </a-space>
             </a-doption>
             <a-doption>
               <a-space @click="handleLogout">
                 <icon-export />
-                <span>
-                  {{ $t('messageBox.logout') }}
-                </span>
+                <span> 退出登陆 </span>
               </a-space>
             </a-doption>
           </template>
@@ -188,7 +190,7 @@
 
 <script lang="ts" setup>
   import { computed, ref, inject } from 'vue';
-  import { Message } from '@arco-design/web-vue';
+  import { Message, Modal } from '@arco-design/web-vue';
   import { useDark, useToggle, useFullscreen } from '@vueuse/core';
   import { useAppStore, useUserStore } from '@/store';
   import { LOCALE_OPTIONS } from '@/locale';
@@ -237,8 +239,27 @@
     refBtn.value.dispatchEvent(event);
   };
   const handleLogout = () => {
-    logout();
+    Modal.confirm({
+      title: '请确认',
+      content: '您确认要退出系统?',
+      okText: '确认',
+      async onOk() {
+        await logout();
+      },
+    });
   };
+
+  const handleClearCache = () => {
+    Modal.confirm({
+      title: '请确认',
+      content: '您确认要清除后台系统缓存吗?',
+      okText: '确认',
+      async onOk() {
+        await userStore.clearCache();
+      },
+    });
+  };
+
   const setDropDownVisible = () => {
     const event = new MouseEvent('click', {
       view: window,
@@ -273,9 +294,11 @@
     display: flex;
     padding-right: 20px;
     list-style: none;
+
     :deep(.locale-select) {
       border-radius: 20px;
     }
+
     li {
       display: flex;
       align-items: center;
@@ -286,16 +309,19 @@
       color: var(--color-text-1);
       text-decoration: none;
     }
+
     .nav-btn {
-      border-color: rgb(var(--gray-2));
       color: rgb(var(--gray-8));
       font-size: 16px;
+      border-color: rgb(var(--gray-2));
     }
+
     .trigger-btn,
     .ref-btn {
       position: absolute;
       bottom: 14px;
     }
+
     .trigger-btn {
       margin-left: 14px;
     }

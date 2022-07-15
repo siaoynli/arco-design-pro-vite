@@ -10,7 +10,7 @@ export default function setupUserLoginInfoGuard(router: Router) {
     NProgress.start();
     const userStore = useUserStore();
     if (isLogin()) {
-      console.log('user role:', userStore.role);
+      console.log('userStore:', userStore.role);
       if (userStore.role) {
         // 如果登陆状态，直接输入login地址，跳转到Workplace
         if (to.name === 'login') {

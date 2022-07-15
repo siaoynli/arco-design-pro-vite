@@ -31,5 +31,6 @@ export interface UserState {
   open_comment?: number;
   invite_code?: any;
   deleted_at?: any;
+  certification?: number;
   role?: RoleType;
 }

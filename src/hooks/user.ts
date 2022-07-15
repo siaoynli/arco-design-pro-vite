@@ -9,8 +9,7 @@ export default function useUser() {
   const logout = async (logoutTo?: string) => {
     await userStore.logout();
     const currentRoute = router.currentRoute.value;
-    Message.success('登出成功');
-    router.push({
+    await router.push({
       name: logoutTo && typeof logoutTo === 'string' ? logoutTo : 'login',
       query: {
         ...router.currentRoute.value.query,

@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Message, Modal } from '@arco-design/web-vue';
+import { Message } from '@arco-design/web-vue';
 import { useUserStore } from '@/store';
 import { getToken } from '@/utils/auth';
 
@@ -17,10 +17,7 @@ if (import.meta.env.VITE_API_BASE_URL) {
 // 添加请求拦截器
 axios.interceptors.request.use(
   (config: AxiosRequestConfig) => {
-    // let each request carry token
-    // this example using the JWT token
-    // Authorization is a custom headers key
-    // please modify it according to the actual situation
+    // 每个请求头部都带token
     const token = getToken();
     if (token) {
       if (!config.headers) {
@@ -31,7 +28,7 @@ axios.interceptors.request.use(
     return config;
   },
   (error) => {
-    // do something
+    // 出现错误，抛出异常
     return Promise.reject(error);
   }
 );
@@ -45,34 +42,27 @@ axios.interceptors.response.use(
         content: res.message || 'Error',
         duration: 5 * 1000,
       });
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      // if (
-      //   [50008, 50012, 50014].includes(res.code) &&
-      //   response.config.url !== '/api/user/info'
-      // ) {
-      //   Modal.error({
-      //     title: 'Confirm logout',
-      //     content:
-      //       'You have been logged out, you can cancel to stay on this page, or log in again',
-      //     okText: 'Re-Login',
-      //     async onOk() {
-      //       const userStore = useUserStore();
-      //
-      //       await userStore.logout();
-      //       window.location.reload();
-      //     },
-      //   });
-      // }
+
       return Promise.reject(new Error(res.message || 'Error'));
+    }
+    if (res.message) {
+      Message.success(res.message);
     }
     return res;
   },
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
     const { response } = error;
+    console.log('reject response:', response);
     Message.error({
       content: response?.data.message || '请求错误，请检查网络!',
       duration: 5 * 1000,
     });
+    // 没有权限，token失效
+    if (response && [401].includes(response.status)) {
+      const userStore = useUserStore();
+      await userStore.logout();
+    }
+
     return Promise.reject(error);
   }
 );

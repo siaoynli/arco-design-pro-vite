@@ -2,11 +2,13 @@ import { defineStore } from 'pinia';
 import {
   login as userLogin,
   logout as userLogout,
+  clearCache,
   getUserInfo,
   LoginData,
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
+import rsaEncrypt from '@/utils/rsa';
 import { RoleType, UserState } from './types';
 import useAppStore from '../app';
 
@@ -41,9 +43,10 @@ const useUserStore = defineStore('user', {
     ios_openid: undefined,
     device_hash: undefined,
     open_comment: undefined,
+    certification: undefined,
     invite_code: undefined,
     deleted_at: undefined,
-    role: 'admin',
+    role: '',
   }),
 
   getters: {
@@ -59,25 +62,30 @@ const useUserStore = defineStore('user', {
         resolve(this.role);
       });
     },
-    // Set user's information
+    // 设置userStore
     setInfo(partial: Partial<UserState>) {
       this.$patch(partial);
     },
 
-    // Reset user's information
+    // 重置用户信息
     resetInfo() {
       this.$reset();
     },
 
-    // Get user's information
+    // 获取用户信息
     async info() {
       const res = await getUserInfo();
       this.setInfo(res.data);
     },
 
-    // Login
-    async login(loginForm: LoginData) {
+    // 登陆
+    async login(loginForm: LoginData, publicKey: string) {
       try {
+        // 密码加密
+        if (loginForm.password && publicKey) {
+          loginForm.password = rsaEncrypt(loginForm.password, publicKey);
+        }
+
         const res = await userLogin(loginForm);
         setToken(res.data.token);
       } catch (err) {
@@ -85,6 +93,13 @@ const useUserStore = defineStore('user', {
         throw err;
       }
     },
+
+    // 清除缓存
+    async clearCache() {
+      await clearCache();
+    },
+
+    // 不管是否退出，执行这个清理动作
     logoutCallBack() {
       const appStore = useAppStore();
       this.resetInfo();
@@ -92,7 +107,7 @@ const useUserStore = defineStore('user', {
       removeRouteListener();
       appStore.clearServerMenu();
     },
-    // Logout
+    // 退出
     async logout() {
       try {
         await userLogout();

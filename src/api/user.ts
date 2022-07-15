@@ -21,11 +21,15 @@ export function login(data: LoginData) {
 }
 
 export function logout() {
-  return axios.post<LoginRes>('/api/user/logout');
+  return axios.post<LoginRes>('/user/logout');
 }
 
 export function getUserInfo() {
   return axios.post<UserState>('/user/current');
+}
+
+export function clearCache() {
+  return axios.get('/clearCache');
 }
 
 export function getMenuList() {
