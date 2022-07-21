@@ -49,11 +49,18 @@
       try {
         const res = await checkTicket(checkUri);
         const { status, token } = res.data;
-        if (status === -1) {
+        if (status === 0) {
           setLoading(true);
         } else {
           setLoading(false);
         }
+        // 授权失败,刷新二维码
+        if (status === -1) {
+          Message.error('授权失败!');
+          clearInterval(timer);
+          await fetchQRCode();
+        }
+
         // 登陆成功
         if (status === 1 && token) {
           setToken(token);
