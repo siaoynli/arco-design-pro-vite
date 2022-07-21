@@ -48,7 +48,9 @@
             {{ $t('login.form.rememberPassword') }}
           </a-checkbox>
         </a-tooltip>
-        <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
+        <a-tooltip content="忘记密码，请联系管理员">
+          <a-link>忘记密码</a-link>
+        </a-tooltip>
       </div>
       <a-button type="primary" html-type="submit" long :loading="loading">
         {{ $t('login.form.login') }}
@@ -62,14 +64,14 @@
   import { useRouter } from 'vue-router';
   import { Message } from '@arco-design/web-vue';
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
-  import { useI18n } from 'vue-i18n';
+
   import { useStorage } from '@vueuse/core';
   import { useUserStore, usePublicKeyStore } from '@/store';
   import useLoading from '@/hooks/loading';
   import type { LoginData } from '@/api/user';
 
   const router = useRouter();
-  const { t } = useI18n();
+
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
@@ -79,8 +81,8 @@
 
   const loginConfig = useStorage('login-password-config', {
     rememberPassword: false,
-    email: '',
-    password: '',
+    email: 'demo@demo.com',
+    password: '123456',
   });
 
   const userInfo = reactive({

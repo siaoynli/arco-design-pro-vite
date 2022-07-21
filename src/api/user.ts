@@ -35,3 +35,32 @@ export function clearCache() {
 export function getMenuList() {
   return axios.post<RouteRecordNormalized[]>('/api/user/menu');
 }
+
+export interface CodeData {
+  key: string;
+  expireAt: string;
+  error: number;
+}
+
+export function getPhoneCode(phone: string) {
+  return axios.post<CodeData>('/code', { phone });
+}
+
+export interface QrCodeData {
+  qrcode: string;
+  checkUri: string;
+}
+
+export function getQRCode() {
+  return axios.get<QrCodeData>('/getQrcode');
+}
+
+export interface CheckData {
+  status: number;
+  token?: any;
+  expireAt?: any;
+}
+
+export function checkTicket(url: string) {
+  return axios.get<CheckData>(url);
+}

@@ -17,13 +17,24 @@
             <QRCode v-if="loginStatus === 1" />
             <PasswordForm v-else-if="loginStatus === 2" />
             <LoginForm v-else />
-            <div v-show="!loginStatus" class="mt-4 view-account-other">
+            <div
+              v-show="loginStatus === 2 || loginStatus === 0"
+              class="mt-4 view-account-other"
+            >
               <div class="flex">
                 <div class="flex-initial"><span>其它登录方式</span></div>
-                <div class="flex-initial mx-2">
+                <div v-if="loginStatus === 0" class="flex-initial mx-2">
                   <a href="javascript:" @click="switchPassword">
                     <a-tooltip content="密码登陆">
                       <icon-lock size="24" class="icon-color" />
+                    </a-tooltip>
+                  </a>
+                </div>
+
+                <div v-if="loginStatus === 2" class="flex-initial mx-2">
+                  <a href="javascript:" @click="switchCode">
+                    <a-tooltip content="验证码登陆">
+                      <icon-phone size="24" class="icon-color" />
                     </a-tooltip>
                   </a>
                 </div>
@@ -69,10 +80,16 @@
     tooltipsTitle.value = '验证码登陆';
   };
 
+  const switchCode = () => {
+    loginStatus.value = 0;
+    tooltipsTitle.value = '验证码登陆';
+  };
+
   onMounted(() => {
     if (window.Notification) {
       Notification.requestPermission();
     }
+    // eslint-disable-next-line no-console
     console.log(
       '\n%c 2022 版权所有 %c  © 西瓜哥 QQ:120235331  Github: https://github.com/siaoynli  \n',
       'color:#FFFFFB;background:#1890ff;padding:5px 0;border-radius:.5rem 0 0 .5rem;',

@@ -5,11 +5,12 @@ import {
   clearCache,
   getUserInfo,
   LoginData,
+  checkTicket,
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
 import rsaEncrypt from '@/utils/rsa';
-import { RoleType, UserState } from './types';
+import { UserState } from './types';
 import useAppStore from '../app';
 
 const useUserStore = defineStore('user', {
@@ -79,7 +80,7 @@ const useUserStore = defineStore('user', {
     },
 
     // 登陆
-    async login(loginForm: LoginData, publicKey: string) {
+    async login(loginForm: LoginData, publicKey = '') {
       try {
         // 密码加密
         if (loginForm.password && publicKey) {

@@ -8,12 +8,6 @@ const usePublicKeyStore = defineStore('publicKey', {
     publicKey: undefined,
   }),
 
-  getters: {
-    keyInfo(state: PublicKeyState): PublicKeyState {
-      return { ...state };
-    },
-  },
-
   actions: {
     setInfo(partial: Partial<PublicKeyState>) {
       this.$patch(partial);

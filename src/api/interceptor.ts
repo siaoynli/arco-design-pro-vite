@@ -39,11 +39,11 @@ axios.interceptors.response.use(
     const res = response.data;
     if (res.error) {
       Message.error({
-        content: res.message || 'Error',
+        content: res.message || '未知错误',
         duration: 5 * 1000,
       });
 
-      return Promise.reject(new Error(res.message || 'Error'));
+      return Promise.reject(new Error(res.message || '未知错误'));
     }
     if (res.message) {
       Message.success(res.message);

@@ -77,17 +77,17 @@
   import { useRouter } from 'vue-router';
   import { Message } from '@arco-design/web-vue';
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
-  import { useI18n } from 'vue-i18n';
+
   import { useStorage } from '@vueuse/core';
-  import { useUserStore, useCodeStore } from '@/store';
+  import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
   import type { LoginData } from '@/api/user';
+  import { getPhoneCode } from '@/api/user';
 
   const router = useRouter();
-  const { t } = useI18n();
+
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
-  const codeStore = useCodeStore();
 
   const cLoading = ref<boolean>(false);
 
@@ -142,8 +142,8 @@
 
     try {
       // 验证码登陆
-      await codeStore.sendCode(userInfo.phone);
-      userInfo.key = codeStore.$state.key || '';
+      const result = await getPhoneCode(userInfo.phone);
+      userInfo.key = result.data.key;
       Message.success('发送成功,验证码有效时间10分钟');
     } finally {
       cLoading.value = false;

@@ -4,8 +4,8 @@
     <div class="login-form-sub-title">{{ $t('login.form.subtitle') }}</div>
 
     <div class="qrcode-image mb-4 mt-4">
-      <img src="@/assets/images/wx-qrcode.png" alt="微信登陆" />
-      <div class="qrcode-loading">
+      <div v-html="qrcodeSvg"></div>
+      <div v-if="loading" class="qrcode-loading">
         <div class="qrcode-mask"></div>
         <icon-loading size="60" class="qrcode-icon-loading" />
       </div>
@@ -16,9 +16,73 @@
 </template>
 
 <script lang="ts" setup>
+  import { ref, onUnmounted } from 'vue';
   import useLoading from '@/hooks/loading';
+  import { clearToken, setToken } from '@/utils/auth';
+  import { useRouter } from 'vue-router';
+  import { Message } from '@arco-design/web-vue';
+  import { checkTicket, getQRCode } from '@/api/user';
 
   const { loading, setLoading } = useLoading();
+  const qrcodeSvg = ref<string>('');
+
+  const router = useRouter();
+
+  let timer: ReturnType<typeof setInterval>;
+
+  // 获取二维码
+  const fetchQRCode = async () => {
+    const result = await getQRCode();
+    const { qrcode, checkUri } = result.data;
+    qrcodeSvg.value = qrcode;
+
+    let tNumber = 1;
+    // 定时获取扫码状态，判断是否登陆成功
+    timer = setInterval(async () => {
+      tNumber += 1;
+      if (tNumber >= 60) {
+        // 超过1分钟刷新二维码
+        clearInterval(timer);
+        await fetchQRCode();
+      }
+
+      try {
+        const res = await checkTicket(checkUri);
+        const { status, token } = res.data;
+        if (status === -1) {
+          setLoading(true);
+        } else {
+          setLoading(false);
+        }
+        // 登陆成功
+        if (status === 1 && token) {
+          setToken(token);
+          clearInterval(timer);
+          Message.success('操作成功，欢迎使用!');
+          const { redirect, ...othersQuery } = router.currentRoute.value.query;
+          await router.push({
+            name: (redirect as string) || 'Workplace',
+            query: {
+              ...othersQuery,
+            },
+          });
+        }
+      } catch (err) {
+        clearToken();
+        clearInterval(timer);
+        await fetchQRCode();
+        throw err;
+      }
+    }, 1000);
+  };
+
+  fetchQRCode();
+  // 清除定时器
+  onUnmounted(() => {
+    if (timer) {
+      clearInterval(timer);
+    }
+  });
 </script>
 
 <style lang="less" scoped>
