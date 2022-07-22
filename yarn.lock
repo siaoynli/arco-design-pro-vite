@@ -4798,6 +4798,11 @@ known-css-properties@^0.21.0:
   resolved "https://registry.yarnpkg.com/known-css-properties/-/known-css-properties-0.21.0.tgz#15fbd0bbb83447f3ce09d8af247ed47c68ede80d"
   integrity sha512-sZLUnTqimCkvkgRS+kbPlYW5o8q5w1cu+uIisKpEWkj31I8mx8kNG162DwRav8Zirkva6N5uoFsm9kzK4mUXjw==
 
+laravel-echo@^1.12.1:
+  version "1.12.1"
+  resolved "https://registry.npmmirror.com/laravel-echo/-/laravel-echo-1.12.1.tgz#d5888d923c79b719ae3598f7e5af4b0e5072236d"
+  integrity sha512-zLI5z1Q+ipqsT4XInFMmHXHmk2Mh5KBH6+l8GAZg+tWc3IKSiOHni7XA8ndJAQCNqrDupnDX+TAk5P0XjwLjGA==
+
 less@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/less/-/less-4.1.2.tgz#6099ee584999750c2624b65f80145f8674e4b4b0"
@@ -6205,6 +6210,13 @@ punycode@^2.1.0:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
 
+pusher-js@^7.2.0:
+  version "7.2.0"
+  resolved "https://registry.npmmirror.com/pusher-js/-/pusher-js-7.2.0.tgz#762b19fc6227421d111809a037c8dba1049c0980"
+  integrity sha512-4JO/RnuP+z1/nU5w6AmHNXov4NIe/PbbVVGnD1Uroab0lStmGxJs+KexMqTcZW0BXe2zOqd/50ZqJ1YjzxwnVw==
+  dependencies:
+    tweetnacl "^1.0.3"
+
 q@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
@@ -7558,6 +7570,11 @@ tunnel-agent@^0.6.0:
   integrity sha1-J6XeoGs2sEoKmWZ3SykIaPD8QP0=
   dependencies:
     safe-buffer "^5.0.1"
+
+tweetnacl@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmmirror.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
+  integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"

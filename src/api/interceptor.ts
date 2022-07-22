@@ -24,6 +24,8 @@ axios.interceptors.request.use(
         config.headers = {};
       }
       config.headers.Authorization = `Bearer ${token}`;
+      // pusher 广播用
+      // config.headers['X-Socket-Id'] = ``;
     }
     return config;
   },
