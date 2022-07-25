@@ -3,6 +3,7 @@ import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Message } from '@arco-design/web-vue';
 import { useUserStore } from '@/store';
 import { getToken } from '@/utils/auth';
+import LarEcho from '@/utils/echo';
 
 export interface HttpResponse<T = unknown> {
   message: string;
@@ -19,13 +20,17 @@ axios.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     // 每个请求头部都带token
     const token = getToken();
+    const socketId = LarEcho.instance.getSocketId() || '';
+
+    console.log('Echo socketId:', socketId);
+
     if (token) {
       if (!config.headers) {
         config.headers = {};
       }
       config.headers.Authorization = `Bearer ${token}`;
-      // pusher 广播用
-      // config.headers['X-Socket-Id'] = ``;
+      // laravel Echo 广播用
+      config.headers['X-Socket-Id'] = `${socketId}`;
     }
     return config;
   },
