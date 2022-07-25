@@ -107,7 +107,7 @@
 
   subscribeNotification();
   subscribePrivateNotification(userStore.id || 0);
-  subscribeChatRoom();
+  subscribeChatRoom(2);
 </script>
 
 <style scoped lang="less">

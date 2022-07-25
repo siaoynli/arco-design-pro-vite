@@ -23,9 +23,14 @@ export default class LarEcho {
     console.log('token', token);
     this.echo = new Echo({
       broadcaster: 'pusher',
-      key: 'f5a370ec394bcbab27e1',
-      cluster: 'ap3',
+      key: '8B9SPpgntbv2T6Fo',
+      wsHost: 'pusher.codedonuts.com',
+      wsPort: 443,
+      wssPort: 443,
       forceTLS: true,
+      encrypted: true,
+      disableStats: true,
+      enabledTransports: ['ws', 'wss'],
       authEndpoint: `${URI}/broadcasting/auth`,
       auth: {
         headers: {

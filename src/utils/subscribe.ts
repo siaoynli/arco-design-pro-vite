@@ -1,8 +1,16 @@
 import { Notification } from '@arco-design/web-vue';
 import LarEcho from '@/utils/echo';
 
-export interface NotificationData {
+// laravel 事件广播的数据结构
+export interface EventNotificationData {
   title?: string;
+  type: string;
+  message: string;
+}
+
+// laravel Notification 通知的数据结构
+export interface NotificationData {
+  id: string;
   type: string;
   message: string;
 }
@@ -14,7 +22,7 @@ export const subscribeNotification = () => {
   return LarEcho.instance.subscribe(
     'Notification',
     '.App\\Events\\MessageNotification',
-    function (data: NotificationData) {
+    function (data: EventNotificationData) {
       console.log('subscribeNotification:', data);
       const title = data?.title || '提示信息';
       switch (data.type) {
@@ -56,7 +64,7 @@ export const subscribePrivateNotification = (id: number) => {
     .subscribe(
       `App.Models.User.${id}`,
       '.App\\Events\\PrivateMessageNotification',
-      function (data: NotificationData) {
+      function (data: EventNotificationData) {
         console.log('subscribePrivateNotification:', data);
         const title = data?.title || '提示信息';
         switch (data.type) {
@@ -87,8 +95,16 @@ export const subscribePrivateNotification = (id: number) => {
         }
       }
     )
-    .notification((notification: any) => {
+    .notification((notification: NotificationData) => {
       console.log('notification:', notification.type);
+      switch (notification.type) {
+        default:
+          Notification.info({
+            title: '提示信息',
+            content: notification.message,
+          });
+          break;
+      }
     });
 };
 
